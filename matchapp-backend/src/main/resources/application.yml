@@ -1,0 +1,32 @@
+server:
+  port: ${PORT}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+spring:
+  application:
+    name: matchapp-backend
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+  data:
+    redis:
+      url: ${REDIS_URL}
+
+
+jwt:
+  secret: ${JWT_SECRET}
+  accessTokenExpiry: 60     # minutes
+  refreshTokenExpiry: 1440  # minutes
+
+springdoc:
+  swagger-ui:
+    path: /docs
+    display-operation-id: true
+    display-request-duration: true
+  api-docs:
+    path: /docs/json
