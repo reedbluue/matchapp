@@ -41,12 +41,11 @@ class TestAuthControllerTest {
   private static String refreshTokenAdmin;
   private static boolean usersCreated = false;
 
-  private final UserMapper userMapper = UserMapper.instance;
-
   @Autowired private MockMvc mockMvc;
   @Autowired private UserRepository userRepository;
   @Autowired private JwtUtil jwtUtil;
   @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private UserMapper userMapper;
 
   @DynamicPropertySource
   private static void properties(DynamicPropertyRegistry registry) {
@@ -92,7 +91,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return200_When_AuthAccessAuthEndpoint() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/authenticated")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/authenticated")
             .header("Authorization", "Bearer " + accessTokenAuth))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andReturn();
@@ -100,7 +99,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return200_When_UserAccessUserEndpoint() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/user")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/user")
             .header("Authorization", "Bearer " + accessTokenUser))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andReturn();
@@ -108,7 +107,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return200_When_AdminAccessAdminEndpoint() throws Exception {
-    MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/admin")
+    MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/admin")
             .header("Authorization", "Bearer " + accessTokenAdmin))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andReturn();
@@ -117,7 +116,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return200_When_AdminAccessUserEndpoint() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/user")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/user")
             .header("Authorization", "Bearer " + accessTokenAdmin))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andReturn();
@@ -125,7 +124,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return403_When_AuthAccessUserEndpoint() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/user")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/user")
             .header("Authorization", "Bearer " + accessTokenAuth))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andReturn();
@@ -133,7 +132,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return403_When_UserAccessAdminEndpoint() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/admin")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/admin")
             .header("Authorization", "Bearer " + accessTokenUser))
         .andExpect(MockMvcResultMatchers.status().isForbidden())
         .andReturn();
@@ -141,14 +140,14 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return401_When_TokenIsNotPresent() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/admin"))
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/admin"))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andReturn();
   }
 
   @Test
   void should_Return401_When_TokenIsInvalid() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/admin")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/admin")
             .header("Authorization", "Bearer invalidToken"))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andReturn();
@@ -156,7 +155,7 @@ class TestAuthControllerTest {
 
   @Test
   void should_Return401_When_TokenIsNotAccessToken() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.get("/test-auth/admin")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/test-auth/admin")
             .header("Authorization", "Bearer " + refreshTokenAdmin))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized())
         .andReturn();

@@ -56,7 +56,7 @@ class AuthControllerTest {
   @Test
   @Order(1)
   void should_RegisterUserSuccessfully_When_ValidUserCreateDto() throws Exception {
-    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(UserMocks.validUserCreateDto())))
         .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -79,7 +79,7 @@ class AuthControllerTest {
         .password(userCreateDto.password())
         .build();
 
-    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(authRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -102,7 +102,7 @@ class AuthControllerTest {
         .password(userCreateDto.password())
         .build();
 
-    MvcResult loginResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    MvcResult loginResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(authRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -116,7 +116,7 @@ class AuthControllerTest {
     RefreshRequestDto refreshRequestDto =
         RefreshRequestDto.builder().refreshToken(loginAuthResponseDto.refreshToken()).build();
 
-    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(refreshRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -135,7 +135,7 @@ class AuthControllerTest {
 
   @Test
   void should_ReturnBadRequest_When_RegistrationRequestDtoIsInvalid() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/register")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(UserMocks.userCreateDtoLessThan18())))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -145,7 +145,7 @@ class AuthControllerTest {
   void should_ReturnBadRequest_When_LoginRequestDtoIsInvalid() throws Exception {
     AuthRequestDto authRequestDto = AuthRequestDto.builder().email("invalid@email.com").build();
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(authRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -155,7 +155,7 @@ class AuthControllerTest {
   void should_ReturnBadRequest_When_RefreshRequestDtoIsInvalid() throws Exception {
     RefreshRequestDto refreshRequestDto = RefreshRequestDto.builder().build();
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(refreshRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -166,7 +166,7 @@ class AuthControllerTest {
     AuthRequestDto authRequestDto =
         AuthRequestDto.builder().email("invalid@email.com").password("invalidPassword").build();
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(authRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -177,7 +177,7 @@ class AuthControllerTest {
     RefreshRequestDto refreshRequestDto =
         RefreshRequestDto.builder().refreshToken("invalidToken").build();
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(refreshRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -191,7 +191,7 @@ class AuthControllerTest {
         .password(userCreateDto.password())
         .build();
 
-    MvcResult loginResult = mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
+    MvcResult loginResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/login")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(authRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -205,7 +205,7 @@ class AuthControllerTest {
     RefreshRequestDto refreshRequestDto =
         RefreshRequestDto.builder().refreshToken(loginAuthResponseDto.accessToken()).build();
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/auth/refresh")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
             .contentType("application/json")
             .content(objectMapper.writeValueAsString(refreshRequestDto)))
         .andExpect(MockMvcResultMatchers.status().isUnauthorized());

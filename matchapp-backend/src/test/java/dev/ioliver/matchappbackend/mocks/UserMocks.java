@@ -6,12 +6,11 @@ import dev.ioliver.matchappbackend.enums.Role;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 public abstract class UserMocks {
   public static UserDto validUserDto() {
     return UserDto.builder()
-        .id(UUID.randomUUID())
+        .id((long) (Math.random() * 1000))
         .email("test@example.com")
         .hashedPassword("hashedPassword")
         .username("username")

@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-  private static final UserMapper userMapper = UserMapper.instance;
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
+  private final UserMapper userMapper;
 
   @Transactional(readOnly = true)
   public UserDto findByEmail(String email) throws BadRequestException {
@@ -46,5 +46,10 @@ public class UserService {
     User userSaved = userRepository.save(user);
 
     return userMapper.toDto(userSaved);
+  }
+
+  public User findById(Long id) throws BadRequestException {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new BadRequestException("Dont exist a User with the id: " + id));
   }
 }

@@ -9,9 +9,13 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Builder
-public record UserCreateDto(@Email @NotEmpty @Length(max = 255) String email,
+public record UserCreateDto(
 
-                            @NotEmpty @Length(min = 8, max = 255) String password,
+    @Email @NotEmpty @Length(max = 255) String email,
 
-                            @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthDate) {
+    @NotEmpty @Length(min = 8, max = 255) String password,
+
+    @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
+
+) {
 }

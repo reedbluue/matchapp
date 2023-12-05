@@ -1,28 +1,32 @@
 package dev.ioliver.matchappbackend.dtos.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.ioliver.matchappbackend.enums.Role;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record UserDto(UUID id,
+public record UserDto(
 
-                      String email,
+    Long id,
 
-                      String hashedPassword,
+    String email,
 
-                      String username,
+    @JsonIgnore String hashedPassword,
 
-                      boolean emailVerified,
+    String username,
 
-                      boolean active,
+    boolean emailVerified,
 
-                      LocalDate birthDate,
+    boolean active,
 
-                      Instant createdAt,
+    LocalDate birthDate,
 
-                      List<Role> roles) {
+    Instant createdAt,
+
+    List<Role> roles
+
+) {
 }

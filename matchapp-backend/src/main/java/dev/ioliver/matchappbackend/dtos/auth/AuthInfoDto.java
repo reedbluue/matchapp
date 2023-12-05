@@ -7,6 +7,8 @@ import lombok.Builder;
 @Builder
 public record AuthInfoDto(
 
+    Long id,
+
     String email,
 
     String username,

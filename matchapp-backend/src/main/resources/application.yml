@@ -18,6 +18,10 @@ spring:
       url: ${REDIS_URL}
 
 
+    mongodb:
+      uri: ${MONGODB_URL}
+
+
 jwt:
   secret: ${JWT_SECRET}
   accessTokenExpiry: 60     # minutes

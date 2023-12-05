@@ -1,6 +1,7 @@
 package dev.ioliver.matchappbackend.models;
 
 import dev.ioliver.matchappbackend.enums.Role;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,8 +26,8 @@ import lombok.NoArgsConstructor;
 @Entity(name = "users")
 public class User {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @Column(unique = true, nullable = false, updatable = false) private String email;
 
@@ -46,4 +48,22 @@ public class User {
   @Builder.Default
   @Enumerated(EnumType.STRING)
   private List<Role> roles = List.of(Role.ROLE_USER);
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private List<UserSkill> skillsToLearn;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL) private List<UserSkill> skillsToTeach;
+
+  public List<Skill> getSkillsToTeach() {
+    return skillsToLearn.stream()
+        .filter(UserSkill::getIsTeachingSkill)
+        .map(UserSkill::getSkill)
+        .toList();
+  }
+
+  public List<Skill> getSkillsToLearn() {
+    return skillsToLearn.stream()
+        .filter(s -> !s.getIsTeachingSkill())
+        .map(UserSkill::getSkill)
+        .toList();
+  }
 }

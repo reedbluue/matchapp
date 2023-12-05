@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/test-auth")
+@RequestMapping("/api/test-auth")
 @SecurityRequirement(name = "Bearer")
 @Tag(name = "Test Controller")
 public class TestAuthController {
