@@ -29,7 +29,6 @@ services:
     env_file: .env
     environment:
       - PORT=${FRONT_PORT}
-      - PROXY_URL=${PROXY_URL}
     ports:
       - ${FRONT_PORT}:80
     depends_on:

@@ -1,7 +1,9 @@
-FROM node:lts-alpine
-WORKDIR /app
+FROM nginx:alpine
+RUN apk add nodejs npm
+
 COPY . .
-RUN npm install && npm install --global http-server
-RUN npm run build
+
+RUN npm install && npm run build && cp -r dist/* /usr/share/nginx/html && \
+    cp nginx.conf /etc/nginx/nginx.conf
+
 EXPOSE ${PORT}
-CMD http-server -p 80 --proxy ${PROXY_URL}:80? ./dist
