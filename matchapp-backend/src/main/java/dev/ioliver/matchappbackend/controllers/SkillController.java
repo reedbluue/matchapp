@@ -2,6 +2,7 @@ package dev.ioliver.matchappbackend.controllers;
 
 import dev.ioliver.matchappbackend.dtos.skill.SkillCreateDto;
 import dev.ioliver.matchappbackend.dtos.skill.SkillDto;
+import dev.ioliver.matchappbackend.dtos.skill.SkillDtoListWithArea;
 import dev.ioliver.matchappbackend.dtos.skill.SkillUpdateDto;
 import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.services.SkillService;
@@ -34,16 +35,23 @@ public class SkillController {
 
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
-  @Operation(description = "This endpoint is used to get all skill areas",
-      summary = "Get all skill areas")
+  @Operation(description = "This endpoint is used to get all skill", summary = "Get all skill")
   public List<SkillDto> getAllSkills() {
     return skillService.findAll();
   }
 
+  @GetMapping("/separated-by-area")
+  @ResponseStatus(HttpStatus.OK)
+  @Operation(description = "This endpoint is used to get all skill separated by area",
+      summary = "Get all skill separated by area")
+  public List<SkillDtoListWithArea> getAllSkillsSeparatedByArea() {
+    return skillService.findAllSeparatedByArea();
+  }
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  @Operation(description = "This endpoint is used to create a new skill area",
-      summary = "Create a new skill area")
+  @Operation(description = "This endpoint is used to create a new skill",
+      summary = "Create a new skill")
   @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
   public SkillDto createSkill(@RequestBody @Valid SkillCreateDto dto) throws BadRequestException {
     return skillService.create(dto);
@@ -51,8 +59,7 @@ public class SkillController {
 
   @PutMapping
   @ResponseStatus(HttpStatus.OK)
-  @Operation(description = "This endpoint is used to update a skill area",
-      summary = "Update a skill area")
+  @Operation(description = "This endpoint is used to update a skill", summary = "Update a skill")
   @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
   public SkillDto updateSkill(@RequestBody @Valid SkillUpdateDto dto) throws BadRequestException {
     return skillService.update(dto);
@@ -60,8 +67,7 @@ public class SkillController {
 
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @Operation(description = "This endpoint is used to delete a skill area",
-      summary = "Delete a skill area")
+  @Operation(description = "This endpoint is used to delete a skill", summary = "Delete a skill")
   @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
   public void deleteSkill(@PathVariable Long id) throws BadRequestException {
     skillService.deleteById(id);

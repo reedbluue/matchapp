@@ -13,7 +13,7 @@ public abstract class UserMocks {
         .id((long) (Math.random() * 1000))
         .email("test@example.com")
         .hashedPassword("hashedPassword")
-        .username("username")
+        .fullName("Usuário Teste")
         .emailVerified(true)
         .active(true)
         .birthDate(LocalDate.now().minusYears(18))
@@ -25,6 +25,7 @@ public abstract class UserMocks {
   public static UserCreateDto validUserCreateDto() {
     return UserCreateDto.builder()
         .email("test@example.com")
+        .fullName("Usuário Teste")
         .password("password")
         .birthDate(LocalDate.now().minusYears(18))
         .build();
@@ -33,6 +34,7 @@ public abstract class UserMocks {
   public static UserCreateDto userCreateDtoLessThan18() {
     return UserCreateDto.builder()
         .email("test@example.com")
+        .fullName("Usuário Teste")
         .password("password")
         .birthDate(LocalDate.now().minusYears(17))
         .build();
@@ -41,6 +43,7 @@ public abstract class UserMocks {
   public static UserCreateDto userCreateDtoShortPassword() {
     return UserCreateDto.builder()
         .email("test@example.com")
+        .fullName("Usuário Teste")
         .password("pass")
         .birthDate(LocalDate.now().minusYears(18))
         .build();

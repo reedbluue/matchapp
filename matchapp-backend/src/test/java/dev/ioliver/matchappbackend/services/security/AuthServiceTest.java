@@ -1,5 +1,6 @@
 package dev.ioliver.matchappbackend.services.security;
 
+import dev.ioliver.matchappbackend.dtos.auth.AuthRegisterDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthRequestDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthResponseDto;
 import dev.ioliver.matchappbackend.dtos.auth.RefreshRequestDto;
@@ -52,7 +53,13 @@ class AuthServiceTest {
   void should_ReturnAccessAndRefreshTokens_When_RegistrationWithValidCredentials()
       throws BadRequestException {
     UserCreateDto userCreateDto = UserMocks.validUserCreateDto();
-    AuthResponseDto response = authService.registration(userCreateDto);
+
+    AuthResponseDto response = authService.registration(AuthRegisterDto.builder()
+        .email(userCreateDto.email())
+        .password(userCreateDto.password())
+        .fullName(userCreateDto.fullName())
+        .birthDate(userCreateDto.birthDate())
+        .build());
 
     assertInstanceOf(AuthResponseDto.class, response);
     assertNotNull(response.accessToken());

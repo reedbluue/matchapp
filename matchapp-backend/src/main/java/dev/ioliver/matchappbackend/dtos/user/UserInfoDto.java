@@ -9,8 +9,6 @@ public record UserInfoDto(
 
     AuthInfoDto authInfo,
 
-    String profileImageUrl,
-
     UserSkillSetDto userSkillSet
 
 ) {

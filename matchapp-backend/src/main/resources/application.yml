@@ -16,8 +16,6 @@ spring:
   data:
     redis:
       url: ${REDIS_URL}
-
-
     mongodb:
       uri: ${MONGODB_URL}
 

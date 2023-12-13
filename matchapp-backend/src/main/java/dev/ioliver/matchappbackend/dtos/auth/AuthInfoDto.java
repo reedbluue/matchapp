@@ -11,7 +11,7 @@ public record AuthInfoDto(
 
     String email,
 
-    String username,
+    String fullName,
 
     List<Role> roles
 

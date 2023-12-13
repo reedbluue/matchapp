@@ -1,5 +1,6 @@
 package dev.ioliver.matchappbackend.dtos.skill;
 
+import dev.ioliver.matchappbackend.dtos.skillArea.SkillAreaDto;
 import dev.ioliver.matchappbackend.models.SkillArea;
 import lombok.Builder;
 
@@ -12,7 +13,7 @@ public record SkillDto(
 
     String description,
 
-    SkillArea skillArea
+    SkillAreaDto skillArea
 
 ) {
 }

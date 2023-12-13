@@ -1,9 +1,9 @@
 package dev.ioliver.matchappbackend.controllers.security;
 
+import dev.ioliver.matchappbackend.dtos.auth.AuthRegisterDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthRequestDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthResponseDto;
 import dev.ioliver.matchappbackend.dtos.auth.RefreshRequestDto;
-import dev.ioliver.matchappbackend.dtos.user.UserCreateDto;
 import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.exceptions.UnauthorizedException;
 import dev.ioliver.matchappbackend.services.security.AuthService;
@@ -42,7 +42,7 @@ public class AuthController {
   @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content())
   @Operation(description = "This endpoint is used to register a user",
       summary = "Registration of a user")
-  public AuthResponseDto login(@RequestBody @Valid UserCreateDto dto) throws BadRequestException {
+  public AuthResponseDto login(@RequestBody @Valid AuthRegisterDto dto) throws BadRequestException {
     return authService.registration(dto);
   }
 

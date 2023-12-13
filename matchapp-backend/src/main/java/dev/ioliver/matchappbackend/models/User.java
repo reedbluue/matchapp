@@ -13,7 +13,6 @@ import jakarta.persistence.OneToMany;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,9 +32,7 @@ public class User {
 
   @Column(nullable = false) private String hashedPassword;
 
-  @Builder.Default
-  @Column(nullable = false, unique = true)
-  private String username = "User@".concat(UUID.randomUUID().toString());
+  @Column(nullable = false) private String fullName;
 
   @Builder.Default private boolean emailVerified = false;
 

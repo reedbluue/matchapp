@@ -63,6 +63,7 @@ class TestAuthControllerTest {
 
     User auth = userRepository.save(User.builder()
         .email("auth@auth.com")
+        .fullName("Auth Auth")
         .hashedPassword(passwordEncoder.encode("authauth"))
         .birthDate(LocalDate.now().minusYears(18))
         .roles(List.of())
@@ -70,6 +71,7 @@ class TestAuthControllerTest {
 
     User user = userRepository.save(User.builder()
         .email("user@user.com")
+        .fullName("User User")
         .hashedPassword(passwordEncoder.encode("useruser"))
         .birthDate(LocalDate.now().minusYears(18))
         .roles(List.of(Role.ROLE_USER))
@@ -77,6 +79,7 @@ class TestAuthControllerTest {
 
     User admin = userRepository.save(User.builder()
         .email("admin@admin.com")
+        .fullName("Admin Admin")
         .hashedPassword(passwordEncoder.encode("adminadmin"))
         .birthDate(LocalDate.now().minusYears(18))
         .roles(List.of(Role.ROLE_ADMIN, Role.ROLE_USER))

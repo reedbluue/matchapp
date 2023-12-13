@@ -1,15 +1,25 @@
 package dev.ioliver.matchappbackend.services;
 
-import dev.ioliver.matchappbackend.dtos.match.MatchCreateDto;
+import dev.ioliver.matchappbackend.dtos.match.MatchAcceptDto;
+import dev.ioliver.matchappbackend.dtos.match.MatchBasicDto;
 import dev.ioliver.matchappbackend.dtos.match.MatchDto;
+import dev.ioliver.matchappbackend.dtos.match.MatchRejectDto;
+import dev.ioliver.matchappbackend.dtos.matchUserInfo.MatchUserInfoBasicDto;
+import dev.ioliver.matchappbackend.dtos.user.UserBasicDto;
 import dev.ioliver.matchappbackend.dtos.user.UserDto;
+import dev.ioliver.matchappbackend.dtos.user.UserInfoDto;
+import dev.ioliver.matchappbackend.dtos.userSkill.UserSkillSetDto;
+import dev.ioliver.matchappbackend.enums.MatchResult;
 import dev.ioliver.matchappbackend.enums.MatchStatus;
 import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.mappers.MatchMapper;
+import dev.ioliver.matchappbackend.mappers.SkillMapper;
 import dev.ioliver.matchappbackend.mappers.UserMapper;
 import dev.ioliver.matchappbackend.models.Match;
+import dev.ioliver.matchappbackend.models.MatchUserInfo;
 import dev.ioliver.matchappbackend.repositories.MatchRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,50 +31,75 @@ public class MatchService {
   private final MatchMapper matchMapper;
   private final UserMapper userMapper;
   private final UserSkillService userSkillService;
+  private final SkillMapper skillMapper;
 
-  public MatchDto create(UserDto principalUser, MatchCreateDto dto) throws BadRequestException {
-    if (dto.skillToLearnId().equals(dto.skillToTeachId()))
-      throw new BadRequestException("Skill to teach and skill to learn cannot be the same");
+  @Transactional
+  public MatchResult acceptMatch(UserDto principalUser, MatchAcceptDto matchAcceptDto)
+      throws BadRequestException {
+    if (!userSkillService.checkIfSkillExistsToTheUser(matchAcceptDto.secondaryUserId(),
+        matchAcceptDto.skillToLearnId(), true))
+      throw new BadRequestException("The skills you are trying to learn not exists for the user!");
 
-    if (userSkillService.checkIfSkillExistsToTheUser(principalUser.id(), dto.skillToTeachId(), true)
-        || userSkillService.checkIfSkillExistsToTheUser(dto.secondaryUserId(), dto.skillToLearnId(),
-        false)) throw new BadRequestException(
-        "The skills you are trying to teach or learn not exists for these users!");
+    boolean exists =
+        matchRepository.checkIfMatchExists(principalUser.id(), matchAcceptDto.secondaryUserId());
 
-    boolean exists = matchRepository.checkIfMatchExists(principalUser.id(), dto.secondaryUserId(),
-        dto.skillToTeachId(), dto.skillToLearnId());
-    if (exists) throw new BadRequestException("Match already exists!");
+    if (!exists) {
+      Match entity = matchMapper.acceptToEntity(matchAcceptDto);
 
-    Match entity = matchMapper.createToEntity(dto);
+      entity.getUserInfo1().setUser(userMapper.toEntity(principalUser));
+      entity.getUserInfo1().setStatus(MatchStatus.ACCEPTED);
 
-    entity.getUserInfo1().setUser(userMapper.toEntity(principalUser));
-    entity.getUserInfo1().setStatus(MatchStatus.ACCEPTED);
+      matchMapper.toDto(matchRepository.save(entity));
 
-    return matchMapper.toDto(matchRepository.save(entity));
+      return MatchResult.CREATED;
+    } else {
+      Optional<Match> match =
+          matchRepository.findByUsers(principalUser.id(), matchAcceptDto.secondaryUserId());
+      if (match.isEmpty()) throw new BadRequestException("This match is not exists!");
+      if (match.get().getUserInfo2().getStatus() == MatchStatus.ACCEPTED)
+        return MatchResult.CREATED;
+      if (match.get().getUserInfo2().getStatus() == MatchStatus.REJECTED)
+        return MatchResult.CREATED;
+      if (match.get().getUserInfo1().getStatus() == MatchStatus.REJECTED)
+        return MatchResult.CREATED;
+
+      match.get().getUserInfo2().setStatus(MatchStatus.ACCEPTED);
+      match.get()
+          .getUserInfo2()
+          .setSkillToLearn(skillMapper.toEntity(matchAcceptDto.skillToLearnId()));
+
+      matchRepository.save(match.get());
+
+      return MatchResult.ACCEPTED;
+    }
   }
 
   @Transactional
-  public void acceptMatch(Long matchId, Long userId) throws BadRequestException {
-    boolean isAcceptable = matchRepository.checkIfMatchIsAcceptable(matchId, userId);
-    if (!isAcceptable) throw new BadRequestException("This match is not acceptable or not exists!");
+  public void rejectMatch(UserDto principalUser, MatchRejectDto matchRejectDto)
+      throws BadRequestException {
+    boolean exists =
+        matchRepository.checkIfMatchExists(principalUser.id(), matchRejectDto.secondaryUserId());
 
-    MatchDto matchDto = findById(matchId);
-    Match entity = matchMapper.toEntity(matchDto);
-    entity.getUserInfo2().setStatus(MatchStatus.ACCEPTED);
+    if (!exists) {
+      Match entity = matchMapper.rejectToEntity(matchRejectDto);
 
-    matchRepository.save(entity);
-  }
+      if (entity.getUserInfo1() == null) entity.setUserInfo1(MatchUserInfo.builder().build());
 
-  @Transactional
-  public void rejectMatch(Long matchId, Long userId) throws BadRequestException {
-    boolean isAcceptable = matchRepository.checkIfMatchIsAcceptable(matchId, userId);
-    if (!isAcceptable) throw new BadRequestException("This match is not rejectable or not exists!");
+      entity.getUserInfo1().setUser(userMapper.toEntity(principalUser));
+      entity.getUserInfo1().setStatus(MatchStatus.REJECTED);
 
-    MatchDto matchDto = findById(matchId);
-    Match entity = matchMapper.toEntity(matchDto);
-    entity.getUserInfo2().setStatus(MatchStatus.REJECTED);
+      matchMapper.toDto(matchRepository.save(entity));
+    } else {
+      Optional<Match> match =
+          matchRepository.findByUsers(principalUser.id(), matchRejectDto.secondaryUserId());
+      if (match.isEmpty()) throw new BadRequestException("This match is not exists!");
+      if (match.get().getUserInfo2().getStatus() == MatchStatus.REJECTED) return;
+      if (match.get().getUserInfo1().getStatus() == MatchStatus.REJECTED) return;
 
-    matchRepository.save(entity);
+      match.get().getUserInfo2().setStatus(MatchStatus.REJECTED);
+
+      matchRepository.save(match.get());
+    }
   }
 
   @Transactional(readOnly = true)
@@ -73,13 +108,57 @@ public class MatchService {
   }
 
   @Transactional(readOnly = true)
-  public List<MatchDto> listAllAcceptedMatchesByUserId(Long id) {
-    return matchMapper.toListDto(matchRepository.findAllAcceptedByUserId(id));
-  }
-
-  @Transactional(readOnly = true)
-  public List<MatchDto> listAllWaitingMatchesByUserId(Long id) {
-    return matchMapper.toListDto(matchRepository.findAllWaitingByUserId(id));
+  public List<MatchBasicDto> listAllAcceptedMatchesByUserId(Long id) {
+    return matchRepository.findAllAcceptedByUserId(id).stream().map(m -> {
+      return MatchBasicDto.builder()
+          .userInfo1(MatchUserInfoBasicDto.builder()
+              .id(m.getUserInfo1().getId())
+              .user(UserBasicDto.builder()
+                  .id(m.getUserInfo1().getUser().getId())
+                  .fullName(m.getUserInfo1().getUser().getFullName())
+                  .userSkillSet(UserSkillSetDto.builder()
+                      .learnSkills(m.getUserInfo1()
+                          .getUser()
+                          .getSkillsToLearn()
+                          .stream()
+                          .map(skillMapper::toDto)
+                          .toList())
+                      .teachSkills(m.getUserInfo1()
+                          .getUser()
+                          .getSkillsToTeach()
+                          .stream()
+                          .map(skillMapper::toDto)
+                          .toList())
+                      .build())
+                  .build())
+              .status(m.getUserInfo1().getStatus())
+              .skillToLearn(m.getUserInfo1().getSkillToLearn())
+              .build())
+          .userInfo2(MatchUserInfoBasicDto.builder()
+              .id(m.getUserInfo2().getId())
+              .user(UserBasicDto.builder()
+                  .id(m.getUserInfo2().getUser().getId())
+                  .fullName(m.getUserInfo2().getUser().getFullName())
+                  .userSkillSet(UserSkillSetDto.builder()
+                      .learnSkills(m.getUserInfo2()
+                          .getUser()
+                          .getSkillsToLearn()
+                          .stream()
+                          .map(skillMapper::toDto)
+                          .toList())
+                      .teachSkills(m.getUserInfo2()
+                          .getUser()
+                          .getSkillsToTeach()
+                          .stream()
+                          .map(skillMapper::toDto)
+                          .toList())
+                      .build())
+                  .build())
+              .status(m.getUserInfo2().getStatus())
+              .skillToLearn(m.getUserInfo2().getSkillToLearn())
+              .build())
+          .build();
+    }).toList();
   }
 
   @Transactional(readOnly = true)

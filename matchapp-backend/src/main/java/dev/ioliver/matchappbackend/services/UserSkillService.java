@@ -44,7 +44,7 @@ public class UserSkillService {
 
     for (Long skillId : skillsIds) {
       boolean exists =
-          userSkillRepository.existsBySkill_IdAndUser_IdAndIsTeachingSkill(user.id(), skillId,
+          userSkillRepository.existsBySkill_IdAndUser_IdAndIsTeachingSkill(skillId, user.id(),
               false);
       if (exists) throw new BadRequestException(
           "This skill is already saved as an learning skill to this user");
@@ -73,7 +73,7 @@ public class UserSkillService {
 
     for (Long skillId : skillsIds) {
       boolean exists =
-          userSkillRepository.existsBySkill_IdAndUser_IdAndIsTeachingSkill(user.id(), skillId,
+          userSkillRepository.existsBySkill_IdAndUser_IdAndIsTeachingSkill(skillId, user.id(),
               true);
       if (exists) throw new BadRequestException(
           "This skill is already saved as an teaching skill to this user");

@@ -1,12 +1,12 @@
 package dev.ioliver.matchappbackend.dtos.match;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
-public record MatchCreateDto(
+@Builder
+public record MatchAcceptDto(
 
     @NotNull Long secondaryUserId,
-
-    @NotNull Long skillToTeachId,
 
     @NotNull Long skillToLearnId
 

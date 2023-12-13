@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  matchapp-backend:
+    build:
+      context: ./matchapp-backend
+      dockerfile: Dockerfile
+    restart: always
+    container_name: matchapp-backend
+    env_file: .env
+    environment:
+      - PORT=${BACK_PORT}
+      - DB_URL=jdbc:postgresql://postgres:5432/matchapp?user=admin&password=admin
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URL=mongodb://mongo:27017/matchapp
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - ${BACK_PORT}:${BACK_PORT}
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - matchapp-network
+  matchapp-front:
+    build:
+      context: ./matchapp-frontend
+      dockerfile: Dockerfile
+    restart: always
+    container_name: matchapp-frontend
+    env_file: .env
+    environment:
+      - PORT=${FRONT_PORT}
+      - PROXY_URL=${PROXY_URL}
+    ports:
+      - ${FRONT_PORT}:80
+    depends_on:
+      - matchapp-backend
+    networks:
+      - matchapp-network
+  postgres:
+    image: postgres:15.4
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: matchapp
+    volumes:
+      - ~/postgresql/data:/var/lib/postgresql/data
+    networks:
+      - matchapp-network
+  redis:
+    image: redis
+    restart: always
+    environment:
+      - REDIS_ARGS="--save 1 1"
+    networks:
+      - matchapp-network
+  mongo:
+    image: mongo
+    restart: always
+    networks:
+      - matchapp-network
+
+networks:
+  matchapp-network:

@@ -12,7 +12,7 @@ public record MatchUserInfoDto(
 
     MatchStatus status,
 
-    Skill skillToTeach
+    Skill skillToLearn
 
 ) {
 }

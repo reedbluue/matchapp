@@ -16,7 +16,7 @@ public record UserDto(
 
     @JsonIgnore String hashedPassword,
 
-    String username,
+    String fullName,
 
     boolean emailVerified,
 

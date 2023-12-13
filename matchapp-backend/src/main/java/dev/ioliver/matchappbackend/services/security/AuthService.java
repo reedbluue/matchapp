@@ -2,6 +2,7 @@ package dev.ioliver.matchappbackend.services.security;
 
 import dev.ioliver.matchappbackend.daos.RedisDao;
 import dev.ioliver.matchappbackend.dtos.auth.AuthInfoDto;
+import dev.ioliver.matchappbackend.dtos.auth.AuthRegisterDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthRequestDto;
 import dev.ioliver.matchappbackend.dtos.auth.AuthResponseDto;
 import dev.ioliver.matchappbackend.dtos.auth.RefreshRequestDto;
@@ -11,6 +12,7 @@ import dev.ioliver.matchappbackend.dtos.user.UserInfoDto;
 import dev.ioliver.matchappbackend.dtos.userSkill.UserSkillSetDto;
 import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.exceptions.UnauthorizedException;
+import dev.ioliver.matchappbackend.mappers.UserMapper;
 import dev.ioliver.matchappbackend.models.security.UserDetailsImp;
 import dev.ioliver.matchappbackend.services.UserService;
 import dev.ioliver.matchappbackend.services.UserSkillService;
@@ -34,6 +36,7 @@ public class AuthService {
   private final UserService userService;
   private final RedisDao redisDao;
   private final UserSkillService userSkillService;
+  private final UserMapper userMapper;
 
   @Transactional
   public AuthResponseDto login(AuthRequestDto dto) throws UnauthorizedException {
@@ -57,8 +60,8 @@ public class AuthService {
   }
 
   @Transactional
-  public AuthResponseDto registration(UserCreateDto dto) throws BadRequestException {
-    UserDto userDto = userService.create(dto);
+  public AuthResponseDto registration(AuthRegisterDto dto) throws BadRequestException {
+    UserDto userDto = userService.create(userMapper.toUserCreateDto(dto));
     UserDetailsImp userDetailsImp = new UserDetailsImp(userDto);
 
     String accessToken = jwtUtil.generateAccessToken(userDetailsImp.getUser());
@@ -102,7 +105,7 @@ public class AuthService {
     return AuthInfoDto.builder()
         .id(userDetailsImp.getUser().id())
         .email(userDetailsImp.getUser().email())
-        .username(userDetailsImp.getUser().username())
+        .fullName(userDetailsImp.getUser().fullName())
         .roles(userDetailsImp.getUser().roles())
         .build();
   }
@@ -110,11 +113,8 @@ public class AuthService {
   public UserInfoDto userInfo(UsernamePasswordAuthenticationToken authToken) {
     AuthInfoDto authInfoDto = authInfo(authToken);
     UserSkillSetDto userSkills = userSkillService.getUserSkills(authInfoDto.id());
-    String uriString = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-    URI uri = URI.create(uriString + "/api/user-image/profile/" + authInfoDto.id());
     return UserInfoDto.builder()
         .authInfo(authInfoDto)
-        .profileImageUrl(uri.toString())
         .userSkillSet(userSkills)
         .build();
   }

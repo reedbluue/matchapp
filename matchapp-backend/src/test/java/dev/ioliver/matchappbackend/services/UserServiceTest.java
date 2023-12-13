@@ -58,7 +58,7 @@ class UserServiceTest {
     assertNotNull(result);
     assertInstanceOf(UserDto.class, result);
     assertNotNull(result.id());
-    assertNotNull(result.username());
+    assertNotNull(result.fullName());
     assertEquals(userCreateDto.email(), result.email());
     assertEquals(userCreateDto.birthDate(), result.birthDate());
     assertTrue(result.active());

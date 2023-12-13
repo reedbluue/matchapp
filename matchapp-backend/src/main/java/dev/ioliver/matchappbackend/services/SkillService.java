@@ -2,11 +2,14 @@ package dev.ioliver.matchappbackend.services;
 
 import dev.ioliver.matchappbackend.dtos.skill.SkillCreateDto;
 import dev.ioliver.matchappbackend.dtos.skill.SkillDto;
+import dev.ioliver.matchappbackend.dtos.skill.SkillDtoListWithArea;
 import dev.ioliver.matchappbackend.dtos.skill.SkillUpdateDto;
+import dev.ioliver.matchappbackend.dtos.skillArea.SkillAreaDto;
 import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.mappers.SkillMapper;
 import dev.ioliver.matchappbackend.models.Skill;
 import dev.ioliver.matchappbackend.repositories.SkillRepository;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SkillService {
+  private final SkillAreaService skillAreaService;
   private final SkillRepository skillRepository;
   private final SkillMapper skillMapper;
 
@@ -22,6 +26,20 @@ public class SkillService {
   public List<SkillDto> findAll() {
     List<Skill> all = skillRepository.findAll();
     return skillMapper.toListDto(all);
+  }
+
+  @Transactional(readOnly = true)
+  public List<SkillDtoListWithArea> findAllSeparatedByArea() {
+    List<SkillDtoListWithArea> list = new ArrayList<>();
+    List<SkillAreaDto> skillAreaDtoList = skillAreaService.findAll();
+    for (SkillAreaDto skillAreaDto : skillAreaDtoList) {
+      List<Skill> skills = skillRepository.findBySkillArea_Id(skillAreaDto.id());
+      if (!skills.isEmpty()) list.add(SkillDtoListWithArea.builder()
+          .skillArea(skillAreaDto)
+          .skills(skillMapper.toListDto(skills))
+          .build());
+    }
+    return list;
   }
 
   @Transactional(readOnly = true)

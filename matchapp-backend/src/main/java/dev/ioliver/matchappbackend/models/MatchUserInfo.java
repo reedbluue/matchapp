@@ -25,5 +25,5 @@ public class MatchUserInfo {
 
   @Builder.Default private MatchStatus status = MatchStatus.WAITING;
 
-  @ManyToOne private Skill skillToTeach;
+  @ManyToOne private Skill skillToLearn;
 }
