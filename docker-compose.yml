@@ -54,7 +54,7 @@ services:
     networks:
       - matchapp-network
   mongo:
-    image: mongo
+    image: mongo:4.4.8
     restart: always
     networks:
       - matchapp-network
