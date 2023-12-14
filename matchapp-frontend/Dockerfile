@@ -1,9 +1,12 @@
-FROM nginx:alpine
+FROM alpine:latest
 RUN apk add nodejs npm
+
+WORKDIR /app
 
 COPY . .
 
-RUN npm install && npm run build && cp -r dist/* /usr/share/nginx/html && \
-    cp nginx.conf /etc/nginx/nginx.conf
+RUN npm install && npm run build
+
+CMD npx vite --host --port ${PORT}
 
 EXPOSE ${PORT}
