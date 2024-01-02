@@ -7,10 +7,11 @@ import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.mappers.SkillAreaMapper;
 import dev.ioliver.matchappbackend.models.SkillArea;
 import dev.ioliver.matchappbackend.repositories.SkillAreaRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,17 @@ public class SkillAreaService {
   public SkillAreaDto findById(Long id) throws BadRequestException {
     SkillArea skillArea = skillAreaRepository.findById(id)
         .orElseThrow(() -> new BadRequestException("Don't exist a SkillArea with the id: " + id));
+    return skillAreaMapper.toDto(skillArea);
+  }
+
+  @Transactional(readOnly = true)
+  public boolean existsByName(String name) {
+    return skillAreaRepository.existsByName(name);
+  }
+
+  @Transactional(readOnly = true)
+  public SkillAreaDto findByName(String name) throws BadRequestException {
+    SkillArea skillArea = skillAreaRepository.findByName(name).orElseThrow(() -> new BadRequestException("Don't exist a SkillArea with the name: " + name));
     return skillAreaMapper.toDto(skillArea);
   }
 

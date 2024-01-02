@@ -37,7 +37,7 @@ const ChatPage = () => {
                     <h3 className={"m-0"}>{TextUtil.getSignificantNames(secondUser.fullName)}</h3>
                     <div className={"flex-grow flex gap-2"}>
                       <span className={"badge badge-warning badge-sm"}>{match.userInfo1.skillToLearn.name}</span>
-                      <span className={"badge badge-info badge-sm"}>{match.userInfo1.skillToLearn.name}</span>
+                      <span className={"badge badge-info badge-sm"}>{match.userInfo2.skillToLearn.name}</span>
                     </div>
                   </div>
                 </div>

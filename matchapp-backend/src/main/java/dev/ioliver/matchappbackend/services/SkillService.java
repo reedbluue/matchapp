@@ -9,11 +9,12 @@ import dev.ioliver.matchappbackend.exceptions.BadRequestException;
 import dev.ioliver.matchappbackend.mappers.SkillMapper;
 import dev.ioliver.matchappbackend.models.Skill;
 import dev.ioliver.matchappbackend.repositories.SkillRepository;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +48,11 @@ public class SkillService {
     Skill skill = skillRepository.findById(id)
         .orElseThrow(() -> new BadRequestException("Don't exist a Skill with the id: " + id));
     return skillMapper.toDto(skill);
+  }
+
+  @Transactional(readOnly = true)
+  public boolean existsByName(String name) {
+    return skillRepository.existsByName(name);
   }
 
   @Transactional
