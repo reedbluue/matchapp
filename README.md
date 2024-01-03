@@ -55,7 +55,7 @@ O projeto usa as seguintes tecnologias:
 
 ## 📸 Screenshots 📸
 
-<div style="display: flex; flex-direction: row; gap: 5px; flex-wrap: wrap">
+<div style="display: flex; flex-direction: row; gap: 5px; flex-wrap: wrap; justify-content: center">
     <img src="img/home.jpg" width="200" />
     <img src="img/register.jpg" width="200" />
     <img src="img/login.jpg" width="200" />
@@ -81,7 +81,7 @@ subir rapidamente uma nova instância da aplicação.
 BACK_PORT=9090
 FRONT_PORT=3000
 VITE_BASE_URL=http://127.0.0.1:9090
-JWT_SECRET=efn40fmufurkf43fi34f
+JWT_SECRET=efn40fmufurkf43fi34f # <--- CHANGE!!!!
 ```
 
 Para rodar o projeto com Docker Compose, abra um terminal na pasta raiz do projeto e digite o
